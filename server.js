@@ -12,9 +12,11 @@ const toDo = [
 ]
 
 const server = http.createServer((req, res) => {
+    res.setHeader('Content-Type', 'text/plain')
+    res.setHeader('X-Powered-By', 'Node.js')
     // destructring
     const { url, method, header } = req
-    console.log(url, method, header)
+    console.log(header)
 
     res.write('hello')
     res.end()
