@@ -12,6 +12,10 @@ const toDo = [
 ]
 
 const server = http.createServer((req, res) => {
+    // destructring
+    const { url, method, header } = req
+    console.log(url, method, header)
+
     res.write('hello')
     res.end()
 })
