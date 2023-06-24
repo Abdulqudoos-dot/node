@@ -12,14 +12,49 @@ const toDo = [
 ]
 
 const server = http.createServer((req, res) => {
-    res.setHeader('Content-Type', 'text/plain')
-    res.setHeader('X-Powered-By', 'Node.js')
-    // destructring
-    const { url, method, header } = req
-    console.log(header)
+    // seting status code for different methods
+    res.statusCode = 404
 
-    res.write('hello')
-    res.end()
+    // we are making a response object to explain the status
+
+    // if the status is 4.xx then there is cliet side error and data will be null
+    const response = {
+        success: false,
+        data: null
+    }
+    // for showing text  on browser
+    // res.setHeader('Content-Type', 'text/plain')   
+
+    // for showing html on browser
+    // res.setHeader('Content-Type', 'text/html')
+    // res.setHeader('X-Powered-By', 'Node.js')
+
+    // for showing json on browser
+    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('X-Powered-By', 'Node.js')
+
+    // res.setHeader(200, {
+    //     'X-Powered-By': 'Node.js',
+    //     'Content-Type': 'text/html'
+    // })
+
+    // destructring
+    // const { url, method, header } = req
+    // res.write('<h1>hello</h1>')
+    // sending data in res.end() method instead of res.write
+
+    // when we not using response object
+    //     res.end(
+    //         JSON.stringify({
+    //             success: true,
+    //             data: toDo
+    //         })
+    //     )
+
+    // when we using response object
+    res.end(
+        JSON.stringify(response)
+    )
 })
 
 
