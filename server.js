@@ -1,3 +1,4 @@
+const { error } = require('console')
 const http = require('http')
 const PORT = 80
 const toDo = [
@@ -13,14 +14,14 @@ const toDo = [
 
 const server = http.createServer((req, res) => {
     // seting status code for different methods
-    res.statusCode = 404
 
     // we are making a response object to explain the status
 
     // if the status is 4.xx then there is cliet side error and data will be null
     const response = {
         success: false,
-        data: null
+        data: null,
+        error: 'please add valid data'
     }
     // for showing text  on browser
     // res.setHeader('Content-Type', 'text/plain')   
@@ -30,8 +31,15 @@ const server = http.createServer((req, res) => {
     // res.setHeader('X-Powered-By', 'Node.js')
 
     // for showing json on browser
-    res.setHeader('Content-Type', 'application/json')
-    res.setHeader('X-Powered-By', 'Node.js')
+    // res.setHeader('Content-Type', 'application/json')
+    // res.setHeader('X-Powered-By', 'Node.js')
+
+    // we using res.writeHead to set header and status 
+
+    res.writeHead(404, {
+        'Content-Type': 'application/json',
+        'X-Powered-By': 'Node.js'
+    })
 
     // res.setHeader(200, {
     //     'X-Powered-By': 'Node.js',
