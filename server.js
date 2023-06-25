@@ -1,67 +1,35 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const port = process.env.PORT || 5000;
+dotenv.config({ path: './config/config.env' });
 
-const http = require('http')
-const PORT = 80
-const toDo = [
-    {
-        id: 1,
-        name: 'Abdul Qudoos',
-    },
-    {
-        id: 2,
-        name: 'Babar Ali',
-    }
-]
+const app = express();
+// making express methods
+// fech all bootcamps
+// making a good api for mantainess
+app.get('/api/v1/bootcamps', (req, res) => {
+    res.status(200).json({ success: true, msg: 'show all bootcams' });
+});
+// fech one bootcamp
+app.get('/api/v1/bootcamps/:id', (req, res) => {
+    res.status(200).json({ success: true, msg: `showing the bootcamp of ${req.params.id} no id` });
+});
+// post bootcamp
+app.post('/api/v1/bootcamps', (req, res) => {
+    res.status(201).json({ success: true, msg: 'creating  the bootcamp' });
+});
 
+// update bootcamp
 
-const server = http.createServer((req, res) => {
-    const { method, url } = req
-    let body = []
-    req.on('data', (chunk) => {
-        body.push(chunk)
-    }).on('end', () => {
-        body = Buffer.concat(body).toString()
-        let status = 404
-        let response = {
-            success: false,
-            data: null,
-            error: 'please add correct credentials'
+app.put('/api/v1/bootcamps/:id', (req, res) => {
+    res.status(200).json({ success: true, msg: `updating the bootcamp of ${req.params.id} no id` });
+});
 
-        }
-        if (method === 'GET' && url === '/todo') {
-            status = 200
-            response.success = true
-            response.data = toDo
-            response.error = null
+// delete bootcamp
 
-        } else if (method === 'POST' && url === '/todo') {
-            const { id, name } = JSON.parse(body)
-            if (!id || !name) {
-                status = 404
-                response.success = false
-                response.data = null
-                response.error = 'please eneter id or name'
-            } else {
-
-                toDo.push({ id, name })
-                response.success = true
-                status = 201
-                response.data = toDo
-                response.error = null
-            }
-        }
-
-        res.writeHead(status, {
-            'Content-Type': 'application/json',
-            'X-Powered-By': 'Node.js'
-        })
-
-
-        res.end(JSON.stringify(response))
-    })
-
-})
-
-
-server.listen(PORT, () => {
-    console.log(`The server is listening on port ${PORT}`)
-})
+app.delete('/api/v1/bootcamps/:id', (req, res) => {
+    res.status(200).json({ success: true, msg: `deleting the bootcamp of ${req.params.id} no id` });
+});
+app.listen(port, () => {
+    console.log(`the application is listening on http://localhost:${port}`);
+});
