@@ -8,12 +8,9 @@ const Bootcamps = require("../models/Bootcamps");
 exports.getBootcamps = async (req, res, next) => {
     try {
         const bootcamps = await Bootcamps.find();
-        if (!bootcamps) {
-            res.status(404).json({ success: false })
-        } else {
 
-            res.status(200).json({ success: true, msg: 'show all bootcamps', bootcamps });
-        }
+        res.status(200).json({ success: true, msg: 'show all bootcamps', bootcamps });
+
     }
     catch (error) {
         console.log(error)
@@ -29,7 +26,7 @@ exports.getBootcamp = async (req, res, next) => {
     try {
         const bootcamp = await Bootcamps.findById(req.params.id)
         if (!bootcamp) {
-            return res.status(404).json({ success: false })
+            return res.status(400).json({ success: false })
         }
 
         res.status(200).json({ success: true, msg: 'show one bootcams', bootcamp });
