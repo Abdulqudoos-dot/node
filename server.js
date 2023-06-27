@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const connectToDb = require('./config/db');
+const errorhandle = require('./middleware/error');
 const port = process.env.PORT || 5000;
 // initializing middleware for log on information of our methods
 dotenv.config({ path: './config/config.env' });
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV === 'development') {
 // using middleware for bootcap router
 
 app.use('/api/v1/bootcamps', require('./routs/bootcamps'))
+app.use(errorhandle)
 app.get('/', (req, res) => {
     res.json({ success: true, msg: 'this is main page' })
 })
