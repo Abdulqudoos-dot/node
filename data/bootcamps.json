@@ -1,0 +1,30 @@
+[
+  {
+    "name": "sadaadsaa",
+    "slug": "ali",
+    "description": "asddasaaadas",
+    "website": "https://www.udemy.com",
+    "phone": "03010161269417",
+    "email": "aliraza45@mail.com",
+    "address": "Apartment 5A129 West 81st Street New York, NY",
+    "location": {
+      "type": "Point",
+      "coordinates": [
+        1,
+        3
+      ]
+    },
+    "formattedAddress": "101 W 81st St, New York, NY 10024-7210, US",
+    "street": "101 W 81st St, New York, NY 10024-7210, US",
+    "city": "New York",
+    "state": "ali",
+    "zipcode": "New York",
+    "country": "usa",
+    "careers": [
+      "Web Development",
+      "UI/UX"
+    ],
+    "averageRating": 2,
+    "averageCost": 40
+  }
+]

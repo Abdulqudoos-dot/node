@@ -1,6 +1,7 @@
 const asyncHandler = require("../middleware/async");
 const Bootcamps = require("../models/Bootcamps");
-const ErrorResponse = require("../util/errorResponse")
+const ErrorResponse = require("../util/errorResponse");
+const geoCoder = require("../util/geoCoder");
 
 
 
@@ -9,7 +10,16 @@ const ErrorResponse = require("../util/errorResponse")
 // @access   public
 
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-    const bootcamps = await Bootcamps.find();
+    let query;
+
+    let queryStr = JSON.stringify(req.query)
+
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
+    console.log(queryStr)
+    query = Bootcamps.find(JSON.parse(queryStr));
+
+
+    const bootcamps = await query
     res.status(200).json({ success: true, msg: 'show all bootcamps', bootcamps });
 })
 
@@ -77,4 +87,30 @@ exports.delBootcamp = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({ success: true, msg: `deleting the bootcamp of ${req.params.id} no id` });
 
+})
+
+// @desc     get  bootcamp with in  radius
+// @ route   /api/v1/bootcamps/:zipcode/:distance
+// @access   public
+exports.getBootCampsInRadius = asyncHandler(async (req, res, next) => {
+    const { zipcode, distance } = req.params
+    const loc = await geoCoder.geocode(zipcode)
+    const lat = loc[0].latitude
+    const lon = loc[0].longitude
+    // get radius of earth
+    // formula of radius 
+    // radius = distance /radius
+    const radius = distance / 3963
+    const bootcamp = await Bootcamps.find({
+        location: {
+            $geoWithin: { $centerSphere: [[lon, lat], radius] }
+        }
+    })
+
+    if (bootcamp.length === 0) {
+        return next(
+            new ErrorResponse(`bootcamp not found with in ${radius} radius `, 404))
+    }
+
+    res.status(200).json({ success: true, msg: `getting the bootcamp of ${radius} radius`, bootcamp });
 })
