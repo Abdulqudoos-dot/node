@@ -20,6 +20,8 @@ if (process.env.NODE_ENV === 'development') {
 // using middleware for bootcap router
 
 app.use('/api/v1/bootcamps', require('./routs/bootcamps'))
+app.use('/api/v1/courses', require('./routs/courses'))
+
 app.use(errorhandle)
 app.get('/', (req, res) => {
     res.json({ success: true, msg: 'this is main page' })

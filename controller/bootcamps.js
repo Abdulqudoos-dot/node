@@ -13,14 +13,16 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     let query;
 
     const reqQuery = { ...req.query }
-    const removeFields = ['select', 'sort']
+    const removeFields = ['select', 'sort', 'page', 'limit']
 
-    removeFields.forEach(param => { delete reqQuery[param] })
-
+    removeFields.forEach(param => {
+        delete reqQuery[param]
+    })
     let queryStr = JSON.stringify(reqQuery)
 
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
     query = Bootcamps.find(JSON.parse(queryStr));
+    // .populate('courses')
 
     if (req.query.select) {
         const field = req.query.select.split(',').join(' ')
@@ -33,8 +35,27 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
         query = query.sort('-createdAt')
     }
 
+    let page = parseInt(req.query.page, 10) || 1
+    let limit = parseInt(req.query.limit, 10) || 5
+    const startInd = (page - 1) * limit
+    const endInd = (page) * limit
+    const totalBootCmp = await Bootcamps.countDocuments()
+    query = query.skip(startInd).limit(limit)
+
     const bootcamps = await query
-    res.status(200).json({ success: true, msg: 'show all bootcamps', bootcamps });
+    let pagination = {}
+    if (startInd > 0) {
+        pagination.pre = page - 1,
+            limit = limit
+    }
+
+    if (endInd < totalBootCmp) {
+        pagination.next = page + 1,
+            limit = limit
+    }
+
+
+    res.status(200).json({ success: true, totalCount: bootcamps.length, bootcamps, pagination });
 })
 
 
@@ -60,8 +81,6 @@ exports.creatBootcamp = asyncHandler(async (req, res, next) => {
 
     const createdBootCamp = await Bootcamps.create(req.body)
     res.status(200).json({ success: true, msg: 'creat bootcam', createdBootCamp });
-
-
 })
 
 // @desc     update bootcamp
@@ -69,9 +88,7 @@ exports.creatBootcamp = asyncHandler(async (req, res, next) => {
 // @access   public
 
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-
     const bootcamp = await Bootcamps.findById(req.params.id)
-
     if (!bootcamp) {
         return next(
             new ErrorResponse(`bootcamp not found with the id of ${req.params.id}`, 404))
@@ -96,8 +113,7 @@ exports.delBootcamp = asyncHandler(async (req, res, next) => {
         return next(
             new ErrorResponse(`bootcamp not found with the id of ${req.params.id}`, 404))
     }
-    await Bootcamps.findByIdAndDelete(req.params.id)
-
+    bootcamp.remove()
 
     res.status(200).json({ success: true, msg: `deleting the bootcamp of ${req.params.id} no id` });
 

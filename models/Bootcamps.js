@@ -101,8 +101,16 @@ const bootcampSchema = new mongoose.Schema({
     }
 
 
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
 })
-
+bootcampSchema.pre('remove', async function (next) {
+    console.log(`course being delete of id ${this._id}`)
+    await this.model('Course').deleteMany({ bootcamp: this._id })
+    next()
+}
+)
 bootcampSchema.pre('save', function (next) {
     this.slug = slugify(this.name, { lower: true })
     next()
@@ -128,4 +136,11 @@ bootcampSchema.pre('save', async function (next) {
 }
 )
 
+bootcampSchema.virtual('courses', {
+    ref: 'Course',
+    localField: '_id',
+    foreignField: 'bootcamp',
+    justOne: false
+}
+)
 module.exports = mongoose.model('bootcamp', bootcampSchema)
