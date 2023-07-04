@@ -100,14 +100,13 @@ const bootcampSchema = new mongoose.Schema({
         default: Date.now
     }
 
-
 }, {
     toObject: { virtuals: true },
     toJSON: { virtuals: true }
 })
-bootcampSchema.pre('remove', async function (next) {
+bootcampSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
     console.log(`course being delete of id ${this._id}`)
-    await this.model('Course').deleteMany({ bootcamp: this._id })
+    await this.model('course').deleteMany({ bootcamp: this._id })
     next()
 }
 )
@@ -131,13 +130,11 @@ bootcampSchema.pre('save', async function (next) {
     this.country = loc[0].country
     this.address = undefined
     next()
-
-
 }
 )
 
 bootcampSchema.virtual('courses', {
-    ref: 'Course',
+    ref: 'course',
     localField: '_id',
     foreignField: 'bootcamp',
     justOne: false
