@@ -1,5 +1,7 @@
 const colors = require('colors')
+const path = require("path")
 const express = require('express');
+const fileupload = require('express-fileupload')
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const connectToDb = require('./config/db');
@@ -7,6 +9,7 @@ const errorhandle = require('./middleware/error');
 const port = process.env.PORT || 5000;
 // initializing middleware for log on information of our methods
 dotenv.config({ path: './config/config.env' });
+
 
 // connecting to database
 connectToDb()
@@ -17,9 +20,14 @@ app.use(express.json())
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
 }
-// using middleware for bootcap router
 
+// using middleware for photo upload router
+app.use(fileupload())
+// serving static file
+app.use(express.static(path.join(__dirname, "public")))
+// using middleware for bootcap router
 app.use('/api/v1/bootcamps', require('./routs/bootcamps'))
+// using middleware for course router
 app.use('/api/v1/courses', require('./routs/courses'))
 
 app.use(errorhandle)
