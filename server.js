@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const connectToDb = require('./config/db');
 const errorhandle = require('./middleware/error');
+const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 5000;
 // initializing middleware for log on information of our methods
 dotenv.config({ path: './config/config.env' });
@@ -23,14 +24,22 @@ if (process.env.NODE_ENV === 'development') {
 
 // using middleware for photo upload router
 app.use(fileupload())
+
+// using cookie parser middleware for send cookies
+
+app.use(cookieParser())
+
 // serving static file
 app.use(express.static(path.join(__dirname, "public")))
 // using middleware for bootcap router
 app.use('/api/v1/bootcamps', require('./routs/bootcamps'))
 // using middleware for course router
 app.use('/api/v1/courses', require('./routs/courses'))
-
+// using middleware for auth router
+app.use('/api/v1/auth', require('./routs/auth'))
+// middleware for error handling
 app.use(errorhandle)
+
 app.get('/', (req, res) => {
     res.json({ success: true, msg: 'this is main page' })
 })
