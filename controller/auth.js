@@ -32,9 +32,9 @@ exports.login = asyncHandler(async (req, res, next) => {
     if (!user) {
         return next(new ErrorResponse('Invalid credentials', 401))
     }
-    const isMath = user.matchPassword(password)
+    const isMatch = await user.matchPassword(password)
 
-    if (!isMath) {
+    if (!isMatch) {
         return next(new ErrorResponse('Invalid credentials', 401))
     }
 
@@ -52,6 +52,49 @@ exports.me = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user.id)
     res.status(200).json({ success: true, user });
 })
+
+
+
+// @desc     update user
+// @route   /api/v1/auth/updateuser
+// @access   private
+
+exports.updateUser = asyncHandler(async (req, res, next) => {
+    const selectedFields = {
+        name: req.body.name,
+        email: req.body.email
+    }
+    const user = await User.findByIdAndUpdate(req.user.id, selectedFields, {
+        new: true,
+        runValidators: true
+    })
+    const token = user.getJwtToken()
+    sendTokenResponse(token, 200, res)
+
+
+})
+
+
+
+// @desc     update user password
+// @route   /api/v1/auth/updateuser
+// @access   private
+
+exports.updateUserPassword = asyncHandler(async (req, res, next) => {
+    let user = await User.findById(req.user.id).select('+password')
+
+    if (!(await user.matchPassword(req.body.currentPassword))) {
+        return next(new ErrorResponse('the current password dont match with last password', 401))
+    }
+
+    user.password = req.body.newPassword
+
+    user = await user.save()
+    const token = user.getJwtToken()
+    sendTokenResponse(token, 200, res)
+})
+
+
 
 // @desc     forgot password
 // @route   /api/v1/auth/forgotpassword

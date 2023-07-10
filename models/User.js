@@ -14,8 +14,7 @@ const userSchema = new mongoose.Schema({
             /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
             'please enter the right email'
         ],
-        required: [true, 'Please add an email'],
-        unique: true,
+        required: [true, 'Please add an email']
     },
     role: {
         type: String,
@@ -60,6 +59,8 @@ userSchema.methods.getResetPasswordToken = function () {
     this.resetPasswordExpire = Date.now() + 10 * 60 * 1000
     return resetToken
 }
+
+userSchema.index({ email: 1 }, { unique: true });
 
 
 

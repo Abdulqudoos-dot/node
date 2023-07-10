@@ -37,6 +37,12 @@ app.use('/api/v1/bootcamps', require('./routs/bootcamps'))
 app.use('/api/v1/courses', require('./routs/courses'))
 // using middleware for auth router
 app.use('/api/v1/auth', require('./routs/auth'))
+// using middleware for user router for admin
+app.use('/api/v1/users', require('./routs/users'))
+// using middleware for reviews router 
+app.use('/api/v1/reviews', require('./routs/reviews'))
+
+
 // middleware for error handling
 app.use(errorhandle)
 
