@@ -1,8 +1,9 @@
 const path = require("path")
 const asyncHandler = require("../middleware/async");
-const Bootcamps = require("../models/Bootcamps");
+// const Bootcamps = require("../models/Bootcamps");
+const Bootcamp = require('../sequelizeModel').bootCamp
 const ErrorResponse = require("../util/errorResponse");
-const geoCoder = require("../util/geoCoder");
+// const geoCoder = require("../util/geoCoder");
 
 
 
@@ -19,9 +20,9 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 // @desc     get one bootcamp
 // @route   /api/v1/bootcamps/:id
 // @access   public
-
+// modified with sequelize
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
-    const bootcamp = await Bootcamps.findById(req.params.id)
+    const bootcamp = await Bootcamp.findByPk(req.params.id)
     if (!bootcamp) {
         return next(
             new ErrorResponse(`bootcamp not found with the id of ${req.params.id}`, 404))
@@ -32,16 +33,10 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 // @desc     creat bootcamp
 // @route   /api/v1/bootcamps
 // @access   private
-
+// modified with sequelize
 exports.creatBootcamp = asyncHandler(async (req, res, next) => {
-    req.body.user = req.user.id
-    const publishedBootCamp = await Bootcamps.findById(req.user.id)
-    if (publishedBootCamp && req.user.role != 'admin') {
-        return next(
-            new ErrorResponse(`the user with id ${req.user.id} is already published a bootcamp`, 400))
-    }
-    const createdBootCamp = await Bootcamps.create(req.body)
-    res.status(200).json({ success: true, msg: 'creat bootcam', data: createdBootCamp });
+    const createdBootCamp = await Bootcamp.create(req.body)
+    res.status(201).json({ success: true, msg: 'creat bootcamp', data: createdBootCamp });
 })
 
 // @desc     update bootcamp

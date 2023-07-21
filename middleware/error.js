@@ -14,11 +14,12 @@ const errorhandle = (err, req, res, next) => {
         error = new ErrorResponse(message, 400)
     }
 
-    if (err.name === "ValidationError") {
+    if (err.name === "SequelizeValidationError") {
         const message = Object.values(err.errors).map((val) => { return val.message })
         console.log(message)
         error = new ErrorResponse(message, 400)
     }
+
     res.status(error.statusCode || 500).json({
         success: false,
         error: error.message || 'Server error'

@@ -11,7 +11,7 @@ const Bootcamps = require('../models/Bootcamps')
 // rerouting to courses router 
 router.use('/:bootcampId/courses', courseRouter)
 router.use('/:bootcampId/reviews', reviewRouter)
-router.route('/').get(advancedResults(Bootcamps, 'courses'), getBootcamps).post(protect, authorize('admin', 'publisher'), creatBootcamp)
+router.route('/').get(advancedResults(Bootcamps, 'courses'), getBootcamps).post(creatBootcamp)
 
 router.route('/:id').get(getBootcamp).put(protect, authorize('admin', 'publisher'), updateBootcamp).delete(protect, authorize('admin', 'publisher'), delBootcamp)
 router.route('/radius/:zipcode/:distance').get(getBootCampsInRadius)
