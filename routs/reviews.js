@@ -11,6 +11,5 @@ router.route('/').get(advancedResults(Reviews, {
     select: 'name description'
 }), getReviews).post(protect, authorize('user', 'admin'), createReview)
 router.route('/:id').get(getReview).put(protect, authorize('user', 'admin'), updateReview).delete(protect, authorize('user', 'admin'), deleteReview)
-// router.route('/').get(advancedResults(Bootcamps, 'bootcamps'), getCourses).post(protect, authorize('admin', 'publisher'), addCourse)
 
 module.exports = router

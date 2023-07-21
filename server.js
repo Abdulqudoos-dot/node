@@ -1,6 +1,12 @@
 const colors = require('colors')
 const path = require("path")
 const express = require('express');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require("helmet")
+const xss = require('xss-clean')
+const rateLimit = require('express-rate-limit')
+const hpp = require('hpp')
+const cors = require('cors')
 const fileupload = require('express-fileupload')
 const dotenv = require('dotenv');
 const morgan = require('morgan');
@@ -17,6 +23,7 @@ connectToDb()
 
 // initializing the app 
 const app = express();
+
 app.use(express.json())
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
@@ -24,6 +31,31 @@ if (process.env.NODE_ENV === 'development') {
 
 // using middleware for photo upload router
 app.use(fileupload())
+// middleware for noSQl injection
+app.use(mongoSanitize());
+// middleware for set different headers for secuirity
+app.use(helmet());
+
+// middleware for remove HTML tags in api
+
+app.use(xss())
+
+// middleware for limit the api call in given time
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 100
+})
+app.use(limiter)
+
+// middleware for params pollution
+
+app.use(hpp)
+
+
+// middleware for enable cross oririgin
+
+app.use(cors)
+
 
 // using cookie parser middleware for send cookies
 
@@ -42,13 +74,9 @@ app.use('/api/v1/users', require('./routs/users'))
 // using middleware for reviews router 
 app.use('/api/v1/reviews', require('./routs/reviews'))
 
-
 // middleware for error handling
 app.use(errorhandle)
 
-app.get('/', (req, res) => {
-    res.json({ success: true, msg: 'this is main page' })
-})
 
 // creating server
 const server = app.listen(port, () => {

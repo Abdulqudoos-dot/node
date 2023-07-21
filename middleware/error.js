@@ -4,9 +4,9 @@ const errorhandle = (err, req, res, next) => {
     error.message = err.message
 
     // console.log(err.name)
-    // mongo object id  not right error this is caalled cast error
+    // mongo object id  not right error this is called cast error
     if (err.name === 'CastError') {
-        message = `resourses not found with the id of ${err.value.bootcamp}`
+        message = `resourses not found `
         error = new ErrorResponse(message, 400)
     }
     if (err.code === 11000) {
