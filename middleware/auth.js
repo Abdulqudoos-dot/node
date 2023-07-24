@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken')
 const ErrorResponse = require('../util/errorResponse')
 const asyncHandler = require('./async');
-const User = require('../models/User');
+// const User = require('../models/User');
+const User = require('../sequelizeModel/index').user
 exports.protect = asyncHandler(async (req, res, next) => {
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
@@ -14,14 +15,12 @@ exports.protect = asyncHandler(async (req, res, next) => {
     if (!token) {
         return next(new ErrorResponse('Not Authorized', 403))
     }
-
-
     try {
         const decode = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        req.user = await User.findById(decode.id)
+        req.user = await User.findByPk(decode.id)
         next()
     } catch (err) {
-        return next(new ErrorResponse('Not Authorized', 403))
+        return next(new ErrorResponse('Not Authorized with id', 403))
     }
 })
 

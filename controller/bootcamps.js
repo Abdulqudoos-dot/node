@@ -114,7 +114,7 @@ exports.getBootCampsInRadius = asyncHandler(async (req, res, next) => {
 
 exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 
-    const bootcamp = await Bootcamps.findById(req.params.id)
+    const bootcamp = await Bootcamp.findByPk(req.params.id)
 
     if (!bootcamp) {
         return next(
@@ -150,7 +150,11 @@ exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 
         }
     })
-    await Bootcamps.findByIdAndUpdate(req.params.id, { photo: file.name })
+    await Bootcamp.update({ photo: file.name }, {
+        where: {
+            id: req.params.id
+        }
+    })
 
     res.status(200).json({ success: true, data: file.name });
 

@@ -16,7 +16,21 @@ try {
 const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
-db.bootCamp = require('../sequelizeModel/Bootcamps')(sequelize, DataTypes)
+db.bootCamp = require('./Bootcamps')(sequelize, DataTypes)
+db.user = require('./Users')(sequelize, DataTypes)
+db.post = require('./Posts')(sequelize, DataTypes)
+db.comment = require('./Comments')(sequelize, DataTypes)
+db.reply = require('./Replies')(sequelize, DataTypes)
+
+db.user.hasMany(db.post);
+db.post.belongsTo(db.user);
+
+
+db.post.belongsToMany(db.comment, { through: 'PostComment', as: 'comments', foreignKey: 'postId' });
+db.comment.belongsToMany(db.post, { through: 'PostComment', as: 'posts', foreignKey: 'commentId' });
+db.comment.belongsToMany(db.reply, { through: 'CommentReply', as: 'replies', foreignKey: 'commentId' });
+db.reply.belongsToMany(db.comment, { through: 'CommentReply', as: 'comments', foreignKey: 'replyId' });
+
 
 db.sequelize.sync({
     force: false

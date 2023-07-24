@@ -8,7 +8,7 @@ require('./sequelizeModel/index')
 // const rateLimit = require('express-rate-limit')
 // const hpp = require('hpp')
 // const cors = require('cors')
-// const fileupload = require('express-fileupload')
+const fileupload = require('express-fileupload')
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 // const connectToDb = require('./config/db');
@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // using middleware for photo upload router
-// app.use(fileupload())
+app.use(fileupload())
 // middleware for noSQl injection
 // app.use(mongoSanitize());
 // middleware for set different headers for secuirity
@@ -78,6 +78,11 @@ app.use('/api/v1/auth', require('./routs/auth'))
 app.use('/api/v1/users', require('./routs/users'))
 // using middleware for reviews router 
 app.use('/api/v1/reviews', require('./routs/reviews'))
+
+
+// using middleware for post router 
+app.use('/api/v1/posts', require('./routs/post'))
+
 
 // middleware for error handling
 app.use(errorhandle)

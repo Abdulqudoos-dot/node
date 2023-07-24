@@ -1,24 +1,32 @@
 
 const asyncHandler = require("../middleware/async");
-const User = require("../models/User");
+// const User = require("../models/User");
+const User = require('../sequelizeModel/index').user
 const ErrorResponse = require("../util/errorResponse");
+const jwt = require('jsonwebtoken')
 const sendEmail = require("../util/sendEmail");
 
 
 // @desc     create user
 // @route   /api/v1/auth/register
 // @access   public
+// sequelize modifeid
+
 
 exports.register = asyncHandler(async (req, res, next) => {
-    const { name, email, role, password } = req.body
-    const user = await User.create({ name, email, role, password })
-    const token = user.getJwtToken()
-    res.status(200).json({ success: true, token });
+    const { name, email, password } = req.body
+    const user = await User.create({ name, email, password })
+    // const token = user.getJwtToken()
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, {
+        expiresIn: process.env.JWT_TOKEN_EXPIRE
+    })
+    sendTokenResponse(token, 200, res)
 })
 
 // @desc     login user
 // @route   /api/v1/auth/login
 // @access   public
+// sequelize modifeid
 
 exports.login = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body
@@ -28,18 +36,26 @@ exports.login = asyncHandler(async (req, res, next) => {
     }
 
 
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({
+        where: { email }
+    })
     if (!user) {
         return next(new ErrorResponse('Invalid credentials', 401))
     }
-    const isMatch = await user.matchPassword(password)
+    // const isMatch = await user.matchPassword(password)
 
-    if (!isMatch) {
-        return next(new ErrorResponse('Invalid credentials', 401))
-    }
+    // if (!isMatch) {
+    //     return next(new ErrorResponse('Invalid credentials', 401))
+    // }
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, {
+        expiresIn: process.env.JWT_TOKEN_EXPIRE
+    })
 
-    const token = user.getJwtToken()
+    // const token = user.getJwtToken()
     sendTokenResponse(token, 200, res)
+    // res.status(200).json({ success: true, data: token });
+
+
 })
 
 
@@ -49,7 +65,11 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @access   private
 
 exports.me = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.user.id)
+    console.log(req.user.id)
+    if (!req.user.id) {
+        return next(new ErrorResponse('not authorized', 401))
+    }
+    const user = await User.findByPk(req.user.id)
     res.status(200).json({ success: true, user });
 })
 
